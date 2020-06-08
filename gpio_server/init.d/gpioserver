@@ -1,0 +1,106 @@
+#! /bin/sh
+debug_me=true
+
+
+  # Close STDOUT
+  exec 1<&-
+  # Close STDERR
+  exec 2<&-
+
+  LOG_FILE=//home/cds/CDDaemon/gpio_server/gpio_server_boot.log
+
+  # Open STDOUT as $LOG_FILE file for read and write.
+  exec 1<>$LOG_FILE
+
+  # Redirect STDERR to STDOUT
+  exec 2>&1
+
+  # Display shell commands with expanded args
+  set -x
+
+
+### BEGIN INIT INFO
+# Provides:          gpio_server to allow sudo access to io hardware of cubietruck
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the gpio server
+# Description:       starts the gpio server
+### END INIT INFO
+## Create RVM wrapper via: rvm wrapper 2.1.1 bootup //home/cds/CDServer/services/gpio_server.rb
+
+DESC="gpioserver for CT io controll"
+NAME=gpio_server
+
+#### Parameter ###############################
+DAEMON_HOME=//home/cds/CDDaemon
+DAEMON_LOG=//tmp
+DAEMON_PORT=8780
+DAEMON_ACL="192.168.1"
+VERBOSE="y"
+
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DAEMON=//home/cds/.rvm/bin/bootup_gpio_server.rb
+DAEMON_OPTS=" -- --subnet $DAEMON_ACL --port $DAEMON_PORT"
+DAEMON_LOG_OPT="--logdir $DAEMON_LOG"
+
+#
+# Function that starts the daemon/service
+#
+# Return
+# 0 if daemon has been started
+# 1 if daemon was already running
+# 2 if daemon could not be started
+do_start()
+{
+	$DAEMON start $DAEMON_OPTS $DAEMON_LOG_OPT  2>/dev/null || return 2
+}
+#
+# Function that stops the daemon/service
+#
+# Return
+# 0 if daemon has been stopped
+# 1 if daemon was already stopped
+# 2 if daemon could not be stopped
+# other if a failure occurred
+do_stop()
+{
+    $DAEMON stop
+    RETVAL="$?"
+    sleep 1
+    return "$RETVAL"
+}
+
+case "$1" in
+start)
+    [ "$VERBOSE" != no ] && echo "Starting $DESC" "$NAME"
+    do_start
+    case "$?" in
+    0|1) [ "$VERBOSE" != no ] && echo 0 ;;
+    2) [ "$VERBOSE" != no ] && echo 1 ;;
+esac
+;;
+stop)
+    [ "$VERBOSE" != no ] && echo "Stopping $DESC" "$NAME"
+    do_stop
+    case "$?" in
+    0|1) [ "$VERBOSE" != no ] && echo 0 ;;
+    2) [ "$VERBOSE" != no ] && echo 1 ;;
+esac
+;;
+restart)
+    echo "Restarting $DESC" "$NAME"
+    $0 stop &&
+    $0 start ||
+exit $?
+;;
+status)
+    status_of_proc -p $PID "$DAEMON" "$NAME" || exit $?
+    ;;
+    *)
+    echo "Usage: $NAME {start|stop|restart|status}" >&2
+    exit 3
+;;
+esac
