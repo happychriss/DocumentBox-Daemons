@@ -1,4 +1,4 @@
-DocumentBox DBDaemon (RPI 4 & Touchswitch)
+DocumentBox DBDaemon (Rails 6)
 ===============================================
 
 This repository belongs to the DocumentBox Project.
