@@ -166,13 +166,21 @@ class Converter
 
         puts "------------ V2 Start conversion for pdf or jpg: Source: '#{fpath}' ----------"
 
-        ## Tika ############################### http://tika.apache.org/
-        exec("java -jar #{tika_path} -h '#{fpath}' >> #{fpath + '.conv.html'}")
-        converter_status_update("Office-Tika")
-        exec("convert '#{fpath + '.conv.html'}'[0] jpg:'#{fpath + '.conv.tmp'}'") #convert only first page if more exists
-        result_sjpg = convert_sjpg(fpath, '.conv.tmp')
-        result_jpg = convert_jpg(fpath, '.conv.tmp')
-
+        if not @libreoffic_available
+          puts "Start LibreOffice to create preview page"
+          exec("libreoffice --headless --invisible --convert-to jpg --outdir '#{File.dirname(fpath)}' '#{fpath}'")
+          result_sjpg = convert_sjpg(fpath, '.jpg')
+          result_jpg = convert_jpg(fpath, '.jpg')
+        else
+          puts "Start tika to extract text V2...Libreoffice not available"
+          check_program('html2ps')
+          ## Tika ############################### http://tika.apache.org/
+          exec("java -jar #{tika_path} -h '#{fpath}' >> #{fpath + '.conv.html'}")
+          converter_status_update("Office-Tika")
+          exec("convert '#{fpath + '.conv.html'}'[0] jpg:'#{fpath + '.conv.tmp'}'") #convert only first page if more exists
+          result_sjpg = convert_sjpg(fpath, '.conv.tmp')
+          result_jpg = convert_jpg(fpath, '.conv.tmp')
+        end
         converter_upload_preview_jpgs(result_jpg, result_sjpg, page_id)
 
         ################ Extract Text from uploaded file
