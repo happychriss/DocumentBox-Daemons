@@ -166,7 +166,7 @@ class Converter
 
         puts "------------ V2 Start conversion for pdf or jpg: Source: '#{fpath}' ----------"
 
-        if not @libreoffic_available
+        if @libreoffic_available
           puts "Start LibreOffice to create preview page"
           exec("libreoffice --headless --invisible --convert-to jpg --outdir '#{File.dirname(fpath)}' '#{fpath}'")
           result_sjpg = convert_sjpg(fpath, '.jpg')
