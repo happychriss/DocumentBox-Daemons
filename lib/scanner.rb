@@ -61,9 +61,8 @@ class Scanner
      "--mode=" + mode,
      "--contrast=" + "70",
      "--brightness=" + "40",
-     "--format=" + "ppm",
      "--resolution=" + resolution,
-     "--format=" + "ppm",
+     "--format=" + "pnm",
      "--batch=" + scan_tmp_file,
      "--source=" + source,
      "2>&1"].each { |c| scan_command = scan_command + c + " " }

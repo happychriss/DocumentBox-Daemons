@@ -20,6 +20,16 @@ module Support
      true
   end
 
+  def shell_exec(step,command)
+    puts "ShellExec[#{step}]: #{command}"
+    Open3.popen3(command) do |stdin, stdout, stderr, thread|
+      err_txt=stderr.read.chomp
+      unless err_txt==""
+        puts "ERROR: #{err_txt}"
+        raise "Shell-Exec - error on "+step+":"+ err_txt
+      end
+    end
+  end
 
 
 end
