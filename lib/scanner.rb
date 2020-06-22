@@ -345,7 +345,7 @@ class Scanner
      "--contrast=" + "70",
      "--brightness=" + "40",
      "--resolution=" + resolution,
-     "--format=" + "ppm",
+     "--format=" + "pnm",
      "--batch=" + scan_tmp_file,
      "--source=" + source,
      "2>&1"].each { |c| scan = scan + c + " " }
