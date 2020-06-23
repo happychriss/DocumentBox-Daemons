@@ -32,7 +32,7 @@ class Scanner
     device_list = Hash.new
 
     if SIMULATE
-      device_list['Simulation'] = 'yes'
+      device_list['Simulation'] = 'Simulation'
     else
       # ["Canon LiDE 35/40/50", "genesys:libusb:001:004", "FUJITSU ScanSnap S300", "epjitsu:libusb:002:005"]
       device_string = %x[scanimage -f"%v %m|%d|"].split('|')
@@ -93,7 +93,7 @@ class Scanner
         scanner_status_update("Start Copy: #{device}")
 
         ### File PrintThread
-        @prepare_print_thread = prepare_print_thread unless @scann_printer_running
+        @prepare_print_thread = prepare_copy_print_thread unless @scann_printer_running
 
         result = %x[#{scan_command}] ############ HERE IS THE SCANNING
         if result.include? "feeder out of document"
@@ -117,7 +117,7 @@ class Scanner
 
   ### Send scanned files to the printer  *************************************************************
 
-  def prepare_print_thread
+  def prepare_copy_print_thread
 
     @scann_printer_terminate = false
     @scann_printer_running = true
@@ -126,7 +126,6 @@ class Scanner
 
     t = Thread.new do
 
-      job_list = []
 
       check_program('empty-page'); check_program('unpaper');
 
@@ -164,11 +163,17 @@ class Scanner
               puts res3
               raise "Error unpaper or convert - #{res3}" unless File.exist?("#{f}.unpaper_copy.pdf")
 
-              puts "Start print"
+              puts "************ Copy-Start print***********"
+              puts "Wait until all jobs are finished..otherwise we sometimes get URF Error"
+              while @printer.get_all_jobs.count!=0
+                puts "."
+                sleep 2
+              end
+
               job = @printer.print_file("#{f}.unpaper_copy.pdf")
-              sleep 2
-              puts "Job Status:#{job.status}"
-              job_list.push(job)
+#              sleep 2
+#              puts "Job Status:#{job.status}"
+#              job_list.push(job)
 
 #              FileUtils.rm "#{f}.unpaper_copy.ppm"
 #              FileUtils.rm "#{f}.unpaper_copy.pdf"
@@ -179,10 +184,6 @@ class Scanner
         end
 
         puts "--check for new work, print jobs:"
-
-        job_list.each { |job|
-          puts job.status
-        }
 
       end
 
