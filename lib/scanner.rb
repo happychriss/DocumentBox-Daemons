@@ -163,14 +163,10 @@ class Scanner
               puts res3
               raise "Error unpaper or convert - #{res3}" unless File.exist?("#{f}.unpaper_copy.pdf")
 
-              puts "************ Copy-Start print***********"
-              puts "Wait until all jobs are finished..otherwise we sometimes get URF Error"
-              while @printer.get_all_jobs.count!=0
-                puts "."
-                sleep 2
-              end
-
+              puts "Start print:#{f}"
               job = @printer.print_file("#{f}.unpaper_copy.pdf")
+              puts "Completed print:#{f}"
+
 #              sleep 2
 #              puts "Job Status:#{job.status}"
 #              job_list.push(job)
@@ -183,7 +179,7 @@ class Scanner
           res6 = FileUtils.rm f_scanned_ppm unless SIMULATE
         end
 
-        puts "--check for new work, print jobs:"
+        puts "--check for new work for copy-print"
 
       end
 
