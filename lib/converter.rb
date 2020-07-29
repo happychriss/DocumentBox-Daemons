@@ -165,7 +165,6 @@ class Converter
         ############### Create Preview Pictures of uploaded file
 
         puts "------------ V2 Start conversion for pdf or jpg: Source: '#{fpath}' ----------"
-
         if @libreoffic_available
           puts "Start LibreOffice to create preview page"
           exec("libreoffice --headless --invisible --convert-to jpg --outdir '#{File.dirname(fpath)}' '#{fpath}'")
@@ -182,6 +181,8 @@ class Converter
           result_jpg = convert_jpg(fpath, '.conv.tmp')
         end
         converter_upload_preview_jpgs(result_jpg, result_sjpg, page_id)
+        ### simulate delay XXX
+        ### sleep(5)
 
         ################ Extract Text from uploaded file
         puts "Start tika to extract text V2..."
@@ -253,7 +254,7 @@ class Converter
   ##################################### Upload back to server when completed
 
   def converter_upload_preview_jpgs(result_jpg, result_sjpg, page_id)
-    puts "*** Upload JPGS to #{@web_server_uri} via convert_upload_jpgs"
+    puts "*** Upload JPGS to #{@web_server_uri} via convert_upload_preview_jpgs"
     RestClient.post @web_server_uri + '/convert_upload_preview_jpgs', {:page => {:result_sjpg => result_sjpg, :result_jpg => result_jpg, :id => page_id}}
   end
 
