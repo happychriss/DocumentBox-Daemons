@@ -3,7 +3,7 @@ require 'rest-client'
 require 'socket'
 require 'cupsffi'
 
-SIMULATE = true
+SIMULATE = false
 
 class Scanner
 
