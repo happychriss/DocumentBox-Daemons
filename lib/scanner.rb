@@ -3,7 +3,7 @@ require 'rest-client'
 require 'socket'
 require 'cupsffi'
 
-SIMULATE = false
+SIMULATE = true
 
 class Scanner
 
@@ -32,6 +32,7 @@ class Scanner
     device_list = Hash.new
 
     if SIMULATE
+      #      sleep(3)
       device_list['Simulation'] = 'Simulation'
     else
       # ["Canon LiDE 35/40/50", "genesys:libusb:001:004", "FUJITSU ScanSnap S300", "epjitsu:libusb:002:005"]

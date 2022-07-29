@@ -3,7 +3,7 @@ gem 'sane-ffi'
 gem 'rest-client'
 gem 'activesupport'
 gem 'daemons'
-gem 'dnssd' , '~> 2.0.1'
+gem 'dnssd'
 ## printing via cups, also requires libcups2-dev and libcups
 gem 'cupsffi'
 
